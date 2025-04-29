@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Mail, Phone, Linkedin, Instagram } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -22,25 +21,48 @@ const ContactForm: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("https://formspree.io/f/xyzwzarq", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Mensagem enviada!",
+          description: "Obrigado por entrar em contato. Em breve responderemos.",
+        });
+        setFormData({
+          name: '',
+          email: '',
+          company: '',
+          service: '',
+          message: '',
+        });
+      } else {
+        toast({
+          title: "Erro ao enviar",
+          description: "Tente novamente mais tarde.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
       toast({
-        title: "Message sent!",
-        description: "Thank you for reaching out. We'll be in touch soon.",
+        title: "Erro ao enviar",
+        description: "Tente novamente mais tarde.",
+        variant: "destructive",
       });
-      setFormData({
-        name: '',
-        email: '',
-        company: '',
-        service: '',
-        message: '',
-      });
+    } finally {
       setIsSubmitting(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -50,12 +72,12 @@ const ContactForm: React.FC = () => {
           <h2 className="section-title">Get In Touch</h2>
           <p className="section-subtitle mx-auto">Ready to elevate your digital presence? Let's talk about your project.</p>
         </div>
-        
+
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="lg:w-1/3">
             <div className="bg-white rounded-lg shadow-lg p-8 h-full">
               <h3 className="text-2xl font-bold text-novawav-navy mb-6">Contact Information</h3>
-              
+
               <div className="space-y-6">
                 <div className="flex items-start">
                   <div className="w-10 h-10 rounded-full bg-novawav-navy bg-opacity-10 flex items-center justify-center mr-4">
@@ -68,7 +90,7 @@ const ContactForm: React.FC = () => {
                     </a>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start">
                   <div className="w-10 h-10 rounded-full bg-novawav-navy bg-opacity-10 flex items-center justify-center mr-4">
                     <Phone size={20} className="text-novawav-navy" />
@@ -80,7 +102,7 @@ const ContactForm: React.FC = () => {
                     </a>
                   </div>
                 </div>
-                
+
                 <div className="pt-6 border-t border-gray-200">
                   <p className="font-medium text-novawav-navy mb-4">Connect on Social Media</p>
                   <div className="flex space-x-4">
@@ -95,11 +117,11 @@ const ContactForm: React.FC = () => {
               </div>
             </div>
           </div>
-          
+
           <div className="lg:w-2/3">
             <div className="bg-white rounded-lg shadow-lg p-8">
               <h3 className="text-2xl font-bold text-novawav-navy mb-6">Send a Message</h3>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -129,7 +151,7 @@ const ContactForm: React.FC = () => {
                     />
                   </div>
                 </div>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">Company Name</label>
@@ -161,7 +183,7 @@ const ContactForm: React.FC = () => {
                     </select>
                   </div>
                 </div>
-                
+
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message *</label>
                   <textarea
@@ -175,7 +197,7 @@ const ContactForm: React.FC = () => {
                     placeholder="Tell us about your project or requirements"
                   ></textarea>
                 </div>
-                
+
                 <div className="flex justify-end">
                   <button
                     type="submit"
